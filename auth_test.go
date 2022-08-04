@@ -2,7 +2,6 @@ package helper
 
 import (
 	"context"
-	"encoding/json"
 	"testing"
 )
 
@@ -20,10 +19,8 @@ func TestAuth(t *testing.T) {
 
 	t.Log(str)
 
-	p, _ := h.ParseTokenString(str)
-
 	var u2 User
-	json.Unmarshal([]byte(p.(string)), &u2)
+	_ = h.ParseTokenString(str, &u2)
 
 	t.Log(u2)
 

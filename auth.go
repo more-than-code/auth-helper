@@ -31,27 +31,33 @@ func (h *Helper) Authenticate(ctx context.Context, payload interface{}) (string,
 
 	/* Set token claims */
 	b, _ := json.Marshal(payload)
-	claims["payload"] = string(b)
+	claims["jsonStr"] = string(b)
 
 	claims["exp"] = time.Now().Add(time.Minute*time.Duration(h.cfg.TtlMinute) + time.Hour*time.Duration(h.cfg.TtlHour) + time.Hour*24*time.Duration(h.cfg.TtlDay)).Unix()
 
 	return token.SignedString(h.cfg.Secret)
 }
 
-func (h *Helper) ParseTokenString(tokenString string) (interface{}, error) {
+func (h *Helper) ParseTokenString(tokenString string, targetObj interface{}) error {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return h.cfg.Secret, nil
 	})
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		payload := claims["payload"]
+		jsonStr := claims["jsonStr"]
 
-		return payload, nil
+		err = json.Unmarshal([]byte(jsonStr.(string)), &targetObj)
+
+		if err != nil {
+			return err
+		}
+
+		return nil
 	}
 
-	return nil, errors.New("failed in parsing")
+	return errors.New("failed in parsing")
 }
