@@ -9,15 +9,11 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type TTL struct {
-	minute int
-	hour   int
-	day    int
-}
-
 type Config struct {
-	ttl    TTL
-	secret []byte
+	TtlMinute int
+	TtlHour   int
+	TtlDay    int
+	Secret    []byte
 }
 
 type Helper struct {
@@ -37,14 +33,14 @@ func (h *Helper) Authenticate(ctx context.Context, payload interface{}) (string,
 	b, _ := json.Marshal(payload)
 	claims["payload"] = string(b)
 
-	claims["exp"] = time.Now().Add(time.Minute*time.Duration(h.cfg.ttl.minute) + time.Hour*time.Duration(h.cfg.ttl.hour) + time.Hour*24*time.Duration(h.cfg.ttl.day)).Unix()
+	claims["exp"] = time.Now().Add(time.Minute*time.Duration(h.cfg.TtlMinute) + time.Hour*time.Duration(h.cfg.TtlHour) + time.Hour*24*time.Duration(h.cfg.TtlDay)).Unix()
 
-	return token.SignedString(h.cfg.secret)
+	return token.SignedString(h.cfg.Secret)
 }
 
 func (h *Helper) ParseTokenString(tokenString string) (interface{}, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return h.cfg.secret, nil
+		return h.cfg.Secret, nil
 	})
 
 	if err != nil {

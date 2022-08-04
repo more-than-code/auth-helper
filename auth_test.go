@@ -12,7 +12,7 @@ type User struct {
 }
 
 func TestAuth(t *testing.T) {
-	h, _ := NewHelper(&Config{ttl: TTL{minute: 0, hour: 0, day: 1}, secret: []byte("test123")})
+	h, _ := NewHelper(&Config{TtlMinute: 0, TtlHour: 0, TtlDay: 1, Secret: []byte("test123")})
 
 	var u1 = User{Name: "John", Age: 18}
 
