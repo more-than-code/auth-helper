@@ -1,7 +1,7 @@
 package helper
 
 import (
-	"context"
+	"encoding/json"
 	"testing"
 )
 
@@ -15,16 +15,16 @@ func TestAuth(t *testing.T) {
 
 	var u1 = User{Name: "John", Age: 18}
 
-	str, _ := h.Authenticate(context.TODO(), &u1)
+	b, _ := json.Marshal(u1)
+	str1 := string(b)
+	tokenStr, _ := h.Authenticate(str1)
 
-	t.Log(str)
+	str2, _ := h.ParseTokenString(tokenStr)
 
-	var u2 User
-	_ = h.ParseTokenString(str, &u2)
+	t.Log(str1)
+	t.Log(str2)
 
-	t.Log(u2)
-
-	if u1 != u2 {
+	if str1 != str2 {
 		t.Fail()
 	}
 }
