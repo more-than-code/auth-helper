@@ -47,7 +47,11 @@ func (h *Helper) ParseTokenString(tokenString string) (string, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		str := claims["str"]
 
-		return str.(string), nil
+		if str != nil {
+			return str.(string), nil
+		}
+
+		return "", nil
 	}
 
 	return "", errors.New("failed in parsing")
