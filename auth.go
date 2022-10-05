@@ -40,18 +40,18 @@ func (h *Helper) ParseTokenString(tokenString string) (string, error) {
 		return h.cfg.Secret, nil
 	})
 
-	if err != nil {
+	if token == nil {
 		return "", err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	if claims, ok := token.Claims.(jwt.MapClaims); ok {
 		str := claims["str"]
 
 		if str != nil {
-			return str.(string), nil
+			return str.(string), err
 		}
 
-		return "", nil
+		return "", err
 	}
 
 	return "", errors.New("failed in parsing")
